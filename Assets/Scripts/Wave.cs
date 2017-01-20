@@ -30,7 +30,7 @@ public class Wave : MonoBehaviour
                         break;
 
                     case WaveObject.Function.Triangle:
-                        y += Mathf.Abs((xx++ % 2) - 1);
+                        y += Mathf.Abs((xx++ % 2) - 1) * waveObject.amplitude;
                         break;
                 }
             }
