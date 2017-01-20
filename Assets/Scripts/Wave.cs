@@ -5,15 +5,18 @@ using UnityEngine;
 public class Wave : MonoBehaviour
 {
     public WaveObject[] waveObjects;
-    public int points = 32;
+    public int pointCount = 32;
 
 	void Update ()
     {
         LineRenderer lineRenderer = GetComponent<LineRenderer>();
-        lineRenderer.numPositions = points;
-        for(int p = 0; p < points; p++)
+        EdgeCollider2D edgeCollider = GetComponent<EdgeCollider2D>();
+        lineRenderer.numPositions = pointCount;
+
+        Vector2[] points = new Vector2[pointCount];
+        for(int p = 0; p < points.Length; p++)
         {
-            float x = (float)p / points;
+            float x = (float)p / points.Length;
             float y = 0;
             for(int wo = 0; wo < waveObjects.Length; wo++)
             {
@@ -34,8 +37,12 @@ public class Wave : MonoBehaviour
                         break;
                 }
             }
-                
-            lineRenderer.SetPosition(p, new Vector2(x - 0.5f, y));
+
+            Vector3 point = new Vector2(x - 0.5f, y);
+            points[p] = point;
+            lineRenderer.SetPosition(p, point);      
         }
+
+        edgeCollider.points = points;
 	}
 }
