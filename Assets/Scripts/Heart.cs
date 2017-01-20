@@ -9,6 +9,9 @@ public class Heart : MonoBehaviour
     public float heartRateMin;
     public float heartRateMax;
 
+	public float heartMovingSpeed=1f;
+
+
     public float heartRateGain;
     public float heartRateLoss;
 
@@ -19,10 +22,17 @@ public class Heart : MonoBehaviour
     public AnimationCurve rotationCurve;
     public Gradient colourGradient;
 	
+    
+	  private float _heartRate;
+
+	  private Rigidbody2D rgb2d;
+    
     void Start()
     {
         heartRate = (heartRateMax - heartRateMin) / 2;
+        rgb2d = GetComponent <Rigidbody2D>();
     }
+
 
 	void Update()
     {
@@ -41,5 +51,9 @@ public class Heart : MonoBehaviour
         transform.localScale = new Vector3(sizeMin, sizeMin) + new Vector3(sizeMax - sizeMin, sizeMax - sizeMin) * sizeCurve.Evaluate(t);
         //transform.Rotate(new Vector3(0, 0, 1), Mathf.PingPong(Time.time, rotation)
         GetComponent<SpriteRenderer>().color = colourGradient.Evaluate(t);
+		//move around
+		Vector2 movement = new Vector2 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical"))*heartMovingSpeed *Time.deltaTime;
+
+		rgb2d.MovePosition (rgb2d.position + movement);
 	}
 }
