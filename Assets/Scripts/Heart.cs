@@ -9,17 +9,32 @@ public class Heart : MonoBehaviour
     public float heartRateMin;
     public float heartRateMax;
 
+
+	  public float heartMovingSpeed=1f;
+
+
+    public float heartRate { get { return _heartRate; } }
+
+
+
+
     public float heartRateGain;
     public float heartRateLoss;
 
     public float sizeMin;
     public float sizeMax;
     public AnimationCurve sizeCurve;
-	
+    
+	  private float _heartRate;
+
+	  private Rigidbody2D rgb2d;
+    
     void Start()
     {
         heartRate = (heartRateMax - heartRateMin) / 2;
+        rgb2d = GetComponent <Rigidbody2D>();
     }
+
 
 	void Update()
     {
@@ -39,5 +54,10 @@ public class Heart : MonoBehaviour
         Debug.Log(heartRate);
 
 		//move around
+		Vector2 movement = new Vector2 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical"))*heartMovingSpeed *Time.deltaTime;
+
+		rgb2d.MovePosition (rgb2d.position + movement);
+
+
 	}
 }
