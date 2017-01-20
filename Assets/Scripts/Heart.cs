@@ -15,6 +15,9 @@ public class Heart : MonoBehaviour
     public float sizeMin;
     public float sizeMax;
     public AnimationCurve sizeCurve;
+    public float rotationAmount;
+    public AnimationCurve rotationCurve;
+    public Gradient colourGradient;
 	
     void Start()
     {
@@ -23,21 +26,20 @@ public class Heart : MonoBehaviour
 
 	void Update()
     {
-        if(Input.GetButtonDown("Tap")) //rename?
+        heartRate = Mathf.Clamp(heartRate - (heartRateLoss * Time.deltaTime), heartRateMin, heartRateMax);
+        if (Input.GetButtonDown("Tap"))
         {
             heartRate += heartRateGain;
         }
-        //maybe only when they're not tapping?
-        heartRate = Mathf.Clamp(heartRate - (heartRateLoss * Time.deltaTime), heartRateMin, heartRateMax);
 
         if(heartRate <= heartRateMin || heartRate >= heartRateMax)
         {
             //lose
         }
-        transform.localScale = new Vector3(sizeMin, sizeMin) + new Vector3(sizeMax - sizeMin, sizeMax - sizeMin) * sizeCurve.Evaluate((heartRate - heartRateMin) / heartRateMax);
 
-        Debug.Log(heartRate);
-
-		//move around
+        float t = (heartRate - heartRateMin) / heartRateMax;
+        transform.localScale = new Vector3(sizeMin, sizeMin) + new Vector3(sizeMax - sizeMin, sizeMax - sizeMin) * sizeCurve.Evaluate(t);
+        //transform.Rotate(new Vector3(0, 0, 1), Mathf.PingPong(Time.time, rotation)
+        GetComponent<SpriteRenderer>().color = colourGradient.Evaluate(t);
 	}
 }
