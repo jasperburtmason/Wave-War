@@ -48,8 +48,8 @@ public class Heart : MonoBehaviour
 
         if(heartRate <= heartRateMin || heartRate >= heartRateMax)
         {
-            Debug.Log("game over!");
-            gameObject.SetActive(false);
+            //Debug.Log("game over!");
+            //gameObject.SetActive(false);
         }
 
         float t = (heartRate - heartRateMin) / heartRateMax;

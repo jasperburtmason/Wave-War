@@ -34,7 +34,7 @@ public class Wave : MonoBehaviour
         Vector2[] points = new Vector2[pointCount];
         for(int p = 0; p < points.Length; p++)
         {
-            float x = (float)p / points.Length;
+            float x = (float)p / (points.Length - 1);
             float y = 0;
 
             for (int o = 0; o < oscillators.Length; o++)
