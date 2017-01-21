@@ -37,20 +37,24 @@ public class HeartbeatMonitor : MonoBehaviour
 
         points.Add(new Vector2(0f, 0f));
         foreach (Heartbeat heartbeat in heartbeats)
-        { 
-            if(Time.time >= heartbeat.time && Time.time <= heartbeat.time + range)
+        {
+            if (Time.time >= heartbeat.time && Time.time <= heartbeat.time + range)
             {
                 float width = Random.Range(heartbeatWidthMin, heartbeatWidthMax);
                 float halfWidth = width / 2;
                 Random.InitState(heartbeat.time.GetHashCode());
                 float t = (Time.time - heartbeat.time) / range;
 
-                Vector3 a = new Vector3(t - halfWidth, 0f);
-                Vector3 b = new Vector3(t, Random.Range(heartbeatHeightMin, heartbeatHeightMax));
-                Vector3 c = new Vector3(t + halfWidth, 0f);
-                points.Add();
-                points.Add();
-                points.Add(new Vector3(t + halfWidth, 0f));
+                Vector3 a1 = new Vector3(t - halfWidth, 0f);
+                Vector3 b1 = new Vector3(t, Random.Range(heartbeatHeightMin, heartbeatHeightMax));
+                Vector3 c1 = new Vector3(t + halfWidth, 0f);
+
+                foreach (Heartbeat other in heartbeats)
+                {
+                    Vector3 a2 = new Vector3(t - halfWidth, 0f);
+                    Vector3 b2 = new Vector3(t, Random.Range(heartbeatHeightMin, heartbeatHeightMax));
+                    Vector3 c2 = new Vector3(t + halfWidth, 0f);
+                }
             }
         }
         points.Add(new Vector2(1f, 0f));
