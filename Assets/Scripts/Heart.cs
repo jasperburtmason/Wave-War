@@ -23,13 +23,13 @@ public class Heart : MonoBehaviour
     public AnimationCurve rotationCurve;
     public Gradient colourGradient;
 
-    public Wave[] waves;
+    public HeartbeatMonitor monitor;
     public float scaleSmoothness;
 
     public int player;
     public Color colour = Color.white;
 	
-	private Rigidbody2D rigidbody;
+	new private Rigidbody2D rigidbody;
     
     void Start()
     {
@@ -44,6 +44,7 @@ public class Heart : MonoBehaviour
         if (player == 1 && Input.GetButtonDown("Jump") || player == 2 && Input.GetButtonDown("Jump-2"))
         {
             heartRate += heartRateGain;
+            monitor.heartbeats.Add(new HeartbeatMonitor.Heartbeat(Time.time));
         }
 
         if(heartRate <= heartRateMin || heartRate >= heartRateMax)
@@ -53,10 +54,7 @@ public class Heart : MonoBehaviour
         }
 
         float t = (heartRate - heartRateMin) / heartRateMax;
-        foreach (Wave wave in waves)
-        {
-            wave.scale = Mathf.Lerp(wave.scale, t, Time.deltaTime * scaleSmoothness);
-        }
+        
         transform.localScale = new Vector3(sizeMin, sizeMin) + new Vector3(sizeMax - sizeMin, sizeMax - sizeMin) * sizeCurve.Evaluate(t);
         transform.Rotate(new Vector3(0, 0, 1), (Mathf.PingPong(Time.time * rotationSpeed, 1f) - 0.5f) * rotationAmount * rotationCurve.Evaluate(t));
         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, Time.deltaTime * rotationResetSpeed * (1f - rotationCurve.Evaluate(t)));
@@ -87,7 +85,7 @@ public class Heart : MonoBehaviour
 		if (collision.gameObject.tag == "Waves")
         {
 			Debug.Log("game over!");
-			gameObject.SetActive (false);
+			//gameObject.SetActive (false);
 		}
 	}
 }
