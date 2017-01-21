@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,6 +6,10 @@ public class GameManager : MonoBehaviour
 {
 	public static GameManager instance = null;
 	public GameObject BorderObjet;
+	[HideInInspector]
+	public float width;
+	[HideInInspector]
+	public float height;
 
 	private float leftBorder;
 	private float rightBorder;
@@ -13,8 +17,7 @@ public class GameManager : MonoBehaviour
 	private float bottomBorder;
 
 	private Vector3 cameraPos;
-	private float width;
-	private float height;
+
 
 	void Awake ()
     {
@@ -22,7 +25,7 @@ public class GameManager : MonoBehaviour
         {
 			instance = this;
 		}
-        else if(instance != this)
+    else if(instance != this)
         {
 			Destroy(gameObject);
 		}
