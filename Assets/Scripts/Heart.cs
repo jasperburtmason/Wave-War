@@ -4,33 +4,22 @@ using UnityEngine;
 
 public class Heart : MonoBehaviour
 {
+    public int player;
+
     [HideInInspector]
     public float heartRate;
-    public float heartRateMin;
-    public float heartRateMax;
+    public float heartRateMin = 0f;
+    public float heartRateMax = 1f;
 
-    public float heartbeatCooldown;
-    private float lastHeartbeat;
+    public float heartRateGain = 0.1f;
+    public float heartRateLoss = 0.1f;
 
-	public float heartMovingSpeed=1f;
+    public float sizeMin = 1f;
+    public float sizeMax = 4f;
 
-    public float heartRateGain;
-    public float heartRateLoss;
+    public float heartMovementSpeed = 1f;
 
-    public float sizeMin;
-    public float sizeMax;
-    public AnimationCurve sizeCurve;
-    public float rotationSpeed;
-    public float rotationAmount;
-    public float rotationResetSpeed;
-    public AnimationCurve rotationCurve;
-    public Gradient colourGradient;
-
-    public HeartbeatMonitor[] monitors;
-    public float scaleSmoothness;
-
-    public int player;
-    public Color colour = Color.white;
+    public Wave[] waves;
 	
 	new private Rigidbody2D rigidbody;
     
@@ -40,59 +29,37 @@ public class Heart : MonoBehaviour
         rigidbody = GetComponent <Rigidbody2D>();
     }
 
-
 	void Update()
     {
         heartRate = Mathf.Clamp(heartRate - (heartRateLoss * Time.deltaTime), heartRateMin, heartRateMax);
-        if ((player == 1 && Input.GetButtonDown("Jump") || player == 2 && Input.GetButtonDown("Jump-2")) && Time.time >= lastHeartbeat +  heartbeatCooldown)
+        if ((player == 1 && Input.GetButtonDown("Jump") || player == 2 && Input.GetButtonDown("Jump-2")))
         {
             heartRate += heartRateGain;
-            for (int i = 0; i < monitors.Length; i++)
-            {
-                monitors[i].heartbeats.Insert(0, new HeartbeatMonitor.Heartbeat(Time.time));
-            }
-            lastHeartbeat = Time.time;
-        }
-
-        if(heartRate <= heartRateMin || heartRate >= heartRateMax)
-        {
-            Debug.Log("game over!");
-            gameObject.SetActive(false);
         }
 
         float t = (heartRate - heartRateMin) / heartRateMax;
-        
-        transform.localScale = new Vector3(sizeMin, sizeMin) + new Vector3(sizeMax - sizeMin, sizeMax - sizeMin) * sizeCurve.Evaluate(t);
-        transform.Rotate(new Vector3(0, 0, 1), (Mathf.PingPong(Time.time * rotationSpeed, 1f) - 0.5f) * rotationAmount * rotationCurve.Evaluate(t));
-        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, Time.deltaTime * rotationResetSpeed * (1f - rotationCurve.Evaluate(t)));
+        foreach (Wave wave in waves)
+        {
+            wave.targetScale = t;
+        }
+        transform.localScale = new Vector3(sizeMin, sizeMin) + new Vector3(sizeMax - sizeMin, sizeMax - sizeMin) * t;
 
-        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        spriteRenderer.color = colour * colourGradient.Evaluate(t);       
-
-		Move();
+        Move();
 	}
 
 	void Move()
     {
-        float x = (player == 1) ? Input.GetAxis("Horizontal") : Input.GetAxis("Horizontal-2");
-        float y = (player == 1) ? Input.GetAxis("Vertical") : Input.GetAxis("Vertical-2");
-
-        // clamp the speed
-        if (Mathf.Sqrt(x * x + y * y) >= 1.44f)
-        {
-            x = 1 / 2 * Mathf.Sqrt(2) * x;
-            y = 1 / 2 * Mathf.Sqrt(2) * y;
-        }
-		Vector2 movement = new Vector2 (x, y );
-		rigidbody.MovePosition (rigidbody.position + movement*heartMovingSpeed *Time.deltaTime);
+        float y = (player == 1) ? Input.GetAxis("Vertical") : (player == 2) ? Input.GetAxis("Vertical-2") : 0f;
+		Vector2 movement = new Vector2(0, y);
+		rigidbody.MovePosition(rigidbody.position + movement * heartMovementSpeed * Time.deltaTime);
 	}
 
 	void OnCollisionEnter2D(Collision2D collision)
     {
 		if (collision.gameObject.tag == "Waves")
         {
-			Debug.Log("game over!");
-			//gameObject.SetActive (false);
-		}
+            GameManager.instance.GameOver(this);
+            gameObject.SetActive(false);
+        }
 	}
 }
