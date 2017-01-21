@@ -4,8 +4,31 @@ using UnityEngine;
 
 public class Wave : MonoBehaviour
 {
-    public WaveObject[] waveObjects;
+    [System.Serializable]
+    public struct Oscillator
+    {
+ 
+        public float t;
+        public float frequency;
+        public float amplitude;
+    }
+
+    public float offset = 0f;
+    public float scale = 1f;
+    public float smoothness = 1f;
     public int pointCount = 32;
+    public Oscillator[] oscillators;
+
+    public float position;
+
+    public float random;
+    public float randomScale;
+    public float randomSmoothness;
+
+    void Start()
+    {
+        random = Random.value;
+    }
 
 	void Update ()
     {
@@ -13,32 +36,27 @@ public class Wave : MonoBehaviour
         EdgeCollider2D edgeCollider = GetComponent<EdgeCollider2D>();
         lineRenderer.numPositions = pointCount;
 
+        random = Mathf.Lerp(random, Random.value, Time.deltaTime * randomSmoothness);
+
+        for (int o = 0; o < oscillators.Length; o++)
+        {
+            oscillators[o].t += Time.deltaTime * scale;
+        }
+
         Vector2[] points = new Vector2[pointCount];
         for(int p = 0; p < points.Length; p++)
         {
             float x = (float)p / points.Length;
             float y = 0;
-            for(int wo = 0; wo < waveObjects.Length; wo++)
+
+            for (int o = 0; o < oscillators.Length; o++)
             {
-                WaveObject waveObject = waveObjects[wo];
-                float xx = (Time.time + x) * 360 * Mathf.Deg2Rad * waveObject.frequency;
-                switch (waveObject.function)
-                {
-                    case WaveObject.Function.Sine:
-                        y += Mathf.Sin(xx) * waveObject.amplitude;
-                        break;
-
-                    case WaveObject.Function.Square:
-                        y += Mathf.Sign(Mathf.Sin(xx)) * waveObject.amplitude;
-                        break;
-
-                    case WaveObject.Function.Triangle:
-                        y += Mathf.Abs((xx++ % 2) - 1) * waveObject.amplitude;
-                        break;
-                }
+                Oscillator oscillator = oscillators[o];
+                float t = (oscillator.t + x + offset) * 180f * Mathf.Deg2Rad * oscillator.frequency;
+                y += Mathf.Sin(t) * oscillator.amplitude * scale;
             }
 
-            Vector3 point = new Vector2(x - 0.5f, y);
+            Vector3 point = new Vector2(x - 0.5f, y); //Mathf.Lerp(lineRenderer.GetPosition(p).y, y, Time.deltaTime * smoothness)
             points[p] = point;
             lineRenderer.SetPosition(p, point);      
         }
