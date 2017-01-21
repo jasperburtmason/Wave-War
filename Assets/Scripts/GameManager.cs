@@ -1,9 +1,10 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour {
-	public static GameManager instance=null;
+public class GameManager : MonoBehaviour
+{
+	public static GameManager instance = null;
 	public GameObject BorderObjet;
 	[HideInInspector]
 	public float width;
@@ -17,20 +18,23 @@ public class GameManager : MonoBehaviour {
 
 	private Vector3 cameraPos;
 
-	// Use this for initialization
-	void Awake () {
-		if(instance==null){
-			instance=this;
-		}else if(instance!=this){
-			Destroy(gameObject); //than destroy this
+
+	void Awake ()
+    {
+		if(instance == null)
+        {
+			instance = this;
+		}
+    else if(instance != this)
+        {
+			Destroy(gameObject);
 		}
 
-
-		SetBorders ();
-		
+		SetBorders();	
 	}
 
-	void SetBorders(){
+	void SetBorders()
+    {
 //		cameraPos=Camera.main.transform.position;
 
 		//the up right corner
@@ -57,7 +61,6 @@ public class GameManager : MonoBehaviour {
 			Quaternion.identity) as GameObject;
 		left.transform.localScale = new Vector3 (1, height, 1);
 		left.transform.Translate( new Vector3(-left.transform.localScale.x/2,0,0));
-
 
 		GameObject right= Instantiate (BorderObjet,  new Vector3 (rightBorder, 0, 0), Quaternion.identity)as GameObject;
 		right.transform.localScale = new Vector3 (1, height, 1);

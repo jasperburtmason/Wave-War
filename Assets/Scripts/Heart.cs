@@ -24,19 +24,17 @@ public class Heart : MonoBehaviour
     public Gradient colourGradient;
 
     public Wave[] waves;
-    public float frequencyMin;
-    public float frequencyMax;
-    public float frequencySpeed;
+    public float scaleSmoothness;
 
     public int player;
     public Color colour = Color.white;
 	
-	private Rigidbody2D rgb2d;
+	private Rigidbody2D rigidbody;
     
     void Start()
     {
         heartRate = (heartRateMax - heartRateMin) / 2;
-        rgb2d = GetComponent <Rigidbody2D>();
+        rigidbody = GetComponent <Rigidbody2D>();
     }
 
 
@@ -50,27 +48,23 @@ public class Heart : MonoBehaviour
 
         if(heartRate <= heartRateMin || heartRate >= heartRateMax)
         {
-            //lose
+            Debug.Log("game over!");
+            gameObject.SetActive(false);
         }
 
         float t = (heartRate - heartRateMin) / heartRateMax;
-
         foreach (Wave wave in waves)
         {
-            wave.scale = Mathf.Lerp(wave.scale, frequencyMin + (frequencyMax - frequencyMin) * t, Time.deltaTime * frequencySpeed);
+            wave.scale = Mathf.Lerp(wave.scale, t, Time.deltaTime * scaleSmoothness);
         }
-
-
         transform.localScale = new Vector3(sizeMin, sizeMin) + new Vector3(sizeMax - sizeMin, sizeMax - sizeMin) * sizeCurve.Evaluate(t);
-        transform.Rotate(new Vector3(0, 0, 1), (Mathf.PingPong(Time.time * rotationSpeed, 1f) - 0.5f) * rotationAmount * rotationCurve.Evaluate(t) * Time.deltaTime);
+        transform.Rotate(new Vector3(0, 0, 1), (Mathf.PingPong(Time.time * rotationSpeed, 1f) - 0.5f) * rotationAmount * rotationCurve.Evaluate(t));
         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, Time.deltaTime * rotationResetSpeed * (1f - rotationCurve.Evaluate(t)));
 
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        spriteRenderer.color = colour * colourGradient.Evaluate(t);
+        spriteRenderer.color = colour * colourGradient.Evaluate(t);       
 
-		//move around
 		Move();
-
 	}
 
 	void Move()
@@ -85,19 +79,15 @@ public class Heart : MonoBehaviour
             y = 1 / 2 * Mathf.Sqrt(2) * y;
         }
 		Vector2 movement = new Vector2 (x, y );
-		rgb2d.MovePosition (rgb2d.position + movement*heartMovingSpeed *Time.deltaTime);
+		rigidbody.MovePosition (rigidbody.position + movement*heartMovingSpeed *Time.deltaTime);
 	}
 
-	void OnCollisionEnter2D(Collision2D col){
-		if (col.gameObject.tag=="Waves"){
-
+	void OnCollisionEnter2D(Collision2D collision)
+    {
+		if (collision.gameObject.tag == "Waves")
+        {
 			Debug.Log("game over!");
 			gameObject.SetActive (false);
-
 		}
-
-
-
-
 	}
 }
