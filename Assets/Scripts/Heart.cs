@@ -87,4 +87,17 @@ public class Heart : MonoBehaviour
 		Vector2 movement = new Vector2 (x, y );
 		rgb2d.MovePosition (rgb2d.position + movement*heartMovingSpeed *Time.deltaTime);
 	}
+
+	void OnCollisionEnter2D(Collision2D col){
+		if (col.gameObject.tag=="Waves"){
+
+			Debug.Log("game over!");
+			gameObject.SetActive (false);
+
+		}
+
+
+
+
+	}
 }
