@@ -1,15 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
 	public static GameManager instance = null;
+
+    public string sceneName = "";
+    public bool gameOver = false;
+
 	public GameObject BorderObjet;
 	[HideInInspector]
 	public float width;
 	[HideInInspector]
 	public float height;
+
+    public GameObject gameOverPanel;
+    public Text winnerText;
 
 	private float leftBorder;
 	private float rightBorder;
@@ -18,20 +27,20 @@ public class GameManager : MonoBehaviour
 
 	private Vector3 cameraPos;
 
-
-	void Awake ()
+	void Awake()
     {
 		if(instance == null)
         {
 			instance = this;
-		}
-    else if(instance != this)
+         
+        }
+        else if(instance != this)
         {
 			Destroy(gameObject);
 		}
 
-		SetBorders();	
-	}
+        SetBorders();
+    }
 
 	void SetBorders()
     {
@@ -74,4 +83,24 @@ public class GameManager : MonoBehaviour
 		bottom.transform.localScale = new Vector3 (width, 1, 1);
 		bottom.transform.Translate (new Vector3 (0, -bottom.transform.localScale.y/2f,0));
 	}
+
+    public void GameOver(Heart instigator)
+    {
+        gameOver = true;
+        gameOverPanel.SetActive(true);
+        winnerText.text = ((instigator.player == 1) ? "Blue" : "Red") + " Player Wins";
+        winnerText.color = (instigator.player == 1) ? Color.blue : Color.red;
+
+        Heart[] hearts = FindObjectsOfType<Heart>();
+        foreach (Heart heart in hearts)
+        {
+            heart.enabled = false;
+        }
+
+        Wave[] waves = FindObjectsOfType<Wave>();
+        foreach (Wave wave in waves)
+        {
+            wave.enabled = false;
+        }
+    }
 }
