@@ -64,7 +64,27 @@ public class Heart : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.identity, Time.deltaTime * rotationResetSpeed * (1f - rotationCurve.Evaluate(t)));
         GetComponent<SpriteRenderer>().color = colourGradient.Evaluate(t);
 
-		Vector2 movement = new Vector2 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical"))*heartMovingSpeed *Time.deltaTime;
-		rgb2d.MovePosition (rgb2d.position + movement);
+
+		//move around
+		Move();
+
 	}
+
+	void Move(){
+		float x = Input.GetAxis ("Horizontal");
+		float y = Input.GetAxis ("Vertical");
+
+		// clamp the speed
+		if (Mathf.Sqrt(x*x+y*y) >=  1.44f) {
+			x = 1 / 2 * Mathf.Sqrt (2) * x;
+			y= 1 / 2 * Mathf.Sqrt (2) * y;
+
+		} 
+		Vector2 movement = new Vector2 (x, y );
+		rgb2d.MovePosition (rgb2d.position + movement*heartMovingSpeed *Time.deltaTime);
+
+
+
+	}
+
 }
