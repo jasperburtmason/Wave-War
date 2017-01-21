@@ -52,8 +52,17 @@ public class Heart : MonoBehaviour
         //transform.Rotate(new Vector3(0, 0, 1), Mathf.PingPong(Time.time, rotation)
         GetComponent<SpriteRenderer>().color = colourGradient.Evaluate(t);
 		//move around
+
+
 		Vector2 movement = new Vector2 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical"))*heartMovingSpeed *Time.deltaTime;
 
 		rgb2d.MovePosition (rgb2d.position + movement);
 	}
+
+	void OnCollisionEnter2D(Collision2D coll) {
+		Debug.Log ("collision");
+
+	
+	}
+
 }
