@@ -9,6 +9,9 @@ public class Heart : MonoBehaviour
     public float heartRateMin;
     public float heartRateMax;
 
+    public float heartbeatCooldown;
+    private float lastHeartbeat;
+
 	public float heartMovingSpeed=1f;
 
     public float heartRateGain;
@@ -23,7 +26,7 @@ public class Heart : MonoBehaviour
     public AnimationCurve rotationCurve;
     public Gradient colourGradient;
 
-    public HeartbeatMonitor monitor;
+    public HeartbeatMonitor[] monitors;
     public float scaleSmoothness;
 
     public int player;
@@ -41,10 +44,14 @@ public class Heart : MonoBehaviour
 	void Update()
     {
         heartRate = Mathf.Clamp(heartRate - (heartRateLoss * Time.deltaTime), heartRateMin, heartRateMax);
-        if (player == 1 && Input.GetButtonDown("Jump") || player == 2 && Input.GetButtonDown("Jump-2"))
+        if ((player == 1 && Input.GetButtonDown("Jump") || player == 2 && Input.GetButtonDown("Jump-2")) && Time.time >= lastHeartbeat +  heartbeatCooldown)
         {
             heartRate += heartRateGain;
-            monitor.heartbeats.Add(new HeartbeatMonitor.Heartbeat(Time.time));
+            for (int i = 0; i < monitors.Length; i++)
+            {
+                monitors[i].heartbeats.Insert(0, new HeartbeatMonitor.Heartbeat(Time.time));
+            }
+            lastHeartbeat = Time.time;
         }
 
         if(heartRate <= heartRateMin || heartRate >= heartRateMax)

@@ -40,29 +40,48 @@ public class HeartbeatMonitor : MonoBehaviour
         {
             if (Time.time >= heartbeat.time && Time.time <= heartbeat.time + range)
             {
-                float width = Random.Range(heartbeatWidthMin, heartbeatWidthMax);
-                float halfWidth = width / 2;
-                Random.InitState(heartbeat.time.GetHashCode());
                 float t = (Time.time - heartbeat.time) / range;
 
-                Vector3 a1 = new Vector3(t - halfWidth, 0f);
-                Vector3 b1 = new Vector3(t, Random.Range(heartbeatHeightMin, heartbeatHeightMax));
-                Vector3 c1 = new Vector3(t + halfWidth, 0f);
+                Random.InitState(heartbeat.time.GetHashCode());
+                float w = Random.Range(heartbeatWidthMin, heartbeatWidthMax);
+                float hw = w / 2;
 
-                foreach (Heartbeat other in heartbeats)
+                Vector3 a = new Vector3(t - hw, 0f);
+                Vector3 b = new Vector3(t, Random.Range(heartbeatHeightMin, heartbeatHeightMax));
+                Vector3 c = new Vector3(t + hw, 0f);
+
+                points.Add(a);
+                points.Add(b);
+                points.Add(c);
+            }
+        }
+
+        points.Add(new Vector2(1f, 0f));
+        //points.Sort((x, y) => x.x.CompareTo(y.x));
+        /*
+        for (int i = 0; i < points.Count - 1; i++)
+        {
+            Vector3 a1 = points[i];
+            Vector3 b1 = points[i + 1];
+
+            for (int ii = points.Count - 1; ii >= 1; ii--)
+            {
+                Vector3 a2 = points[ii];
+                Vector3 b2 = points[ii - 1];
+
+                Vector3 intersection;
+                if(LineLineIntersection(out intersection, a1, b1, a2, b2))
                 {
-                    Vector3 a2 = new Vector3(t - halfWidth, 0f);
-                    Vector3 b2 = new Vector3(t, Random.Range(heartbeatHeightMin, heartbeatHeightMax));
-                    Vector3 c2 = new Vector3(t + halfWidth, 0f);
+                    points[i + 1] = intersection;
+                    points[ii - 1] = intersection;
                 }
             }
         }
-        points.Add(new Vector2(1f, 0f));
-        points.Sort((x, y) => x.x.CompareTo(y.x));
+        */
+
         lineRenderer.numPositions = points.Count;
         lineRenderer.SetPositions(points.ToArray());
         points.Clear();
-        //edgeCollider.points = points;
     }
 
     //http://wiki.unity3d.com/index.php/3d_Math_functions - Bit Barrel Media 
