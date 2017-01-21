@@ -51,18 +51,26 @@ public class Heart : MonoBehaviour
         transform.localScale = new Vector3(sizeMin, sizeMin) + new Vector3(sizeMax - sizeMin, sizeMax - sizeMin) * sizeCurve.Evaluate(t);
         //transform.Rotate(new Vector3(0, 0, 1), Mathf.PingPong(Time.time, rotation)
         GetComponent<SpriteRenderer>().color = colourGradient.Evaluate(t);
+
 		//move around
+		Move();
 
-
-		Vector2 movement = new Vector2 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical"))*heartMovingSpeed *Time.deltaTime;
-
-		rgb2d.MovePosition (rgb2d.position + movement);
 	}
 
-	void OnCollisionEnter2D(Collision2D coll) {
-		Debug.Log ("collision");
+	void Move(){
+		float x = Input.GetAxis ("Horizontal");
+		float y = Input.GetAxis ("Vertical");
 
-	
+		// clamp the speed
+		if (Mathf.Sqrt(x*x+y*y) >=  1.44f) {
+			x = 1 / 2 * Mathf.Sqrt (2) * x;
+			y= 1 / 2 * Mathf.Sqrt (2) * y;
+
+		} 
+		Vector2 movement = new Vector2 (x, y );
+		rgb2d.MovePosition (rgb2d.position + movement*heartMovingSpeed *Time.deltaTime);
+
+
 	}
 
 }
