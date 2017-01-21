@@ -4,34 +4,29 @@ using UnityEngine;
 
 public class Wave : MonoBehaviour
 {
-    [System.Serializable]
-    public struct Oscillator
-    {
-        public enum Function { Sine, Square };
-        public Function function;
-        public float frequency;
-        public float amplitude;
-    }
+    public enum Function { Sine, Triangle, Square };
+    public Function function;
+    public float frequency;
+    public float amplitude;
 
-    public float startScale;
-    public float targetScale = 1f;
-    public float scaleSmoothness = 1f;
-    public float speed = 1f;
-    public float smoothness = 1f;
-    public int pointCount = 32;
-    public Oscillator[] oscillators;
+    public float startSpeed = 0f;
+    public float targetSpeed = 1f;
+    public float speedSmoothness = 1f;
 
-    private float scale;
+    public int pointCount = 64;
+
+    private float speed;
+    private float time;
 
     void Start()
     {
-        scale = startScale;
+        speed = startSpeed;
         transform.localScale = new Vector3(GameManager.instance.width, transform.localScale.y, transform.localScale.z);
     }
 
 	void Update ()
     {
-        scale = Mathf.Lerp(scale, targetScale, Time.deltaTime * scaleSmoothness);
+        speed = Mathf.Lerp(speed, targetSpeed, Time.deltaTime * speedSmoothness);
 
         LineRenderer lineRenderer = GetComponent<LineRenderer>();
         EdgeCollider2D edgeCollider = GetComponent<EdgeCollider2D>();
@@ -43,26 +38,27 @@ public class Wave : MonoBehaviour
             float x = (float)p / (points.Length - 1);
             float y = 0;
 
-            for (int o = 0; o < oscillators.Length; o++)
+            float t = (time + x) * frequency;
+            switch (function)
             {
-                Oscillator oscillator = oscillators[o];
-                float t = (Time.time + x) * oscillator.frequency * scale;
-                switch(oscillator.function)
-                {
-                    case Oscillator.Function.Sine:
-                        y += Mathf.Sin(t * 180f * Mathf.Deg2Rad);
-                        break;
-                    case Oscillator.Function.Square:
-                        y += Mathf.Sign(Mathf.Sin(t * 180f * Mathf.Deg2Rad));
-                        break;
-                }
-                y *= oscillator.amplitude * scale;
+                case Function.Sine:
+                    y = Mathf.Sin(t * 180f * Mathf.Deg2Rad);
+                    break;
+                case Function.Triangle:
+                    y = Mathf.PingPong(t * 180f * Mathf.Deg2Rad, Mathf.PI) / Mathf.PI * 2f - 1f;
+                    break;
+                case Function.Square:
+                    y = Mathf.Sign(Mathf.Sin(t * 180f * Mathf.Deg2Rad));
+                    break;
             }
+            y *= amplitude * speed; 
 
             Vector3 point = new Vector2(x - 0.5f, y);
             points[p] = point;
             lineRenderer.SetPosition(p, point);      
         }
+
+        time += Time.deltaTime * speed;
 
         edgeCollider.points = points;
     }

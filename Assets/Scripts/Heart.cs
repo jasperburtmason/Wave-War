@@ -7,59 +7,103 @@ public class Heart : MonoBehaviour
     public int player;
 
     [HideInInspector]
-    public float heartRate;
-    public float heartRateMin = 0f;
-    public float heartRateMax = 1f;
+    public int health;
+    public int healthMin = 0;
+    public int healthMax = 100;
 
-    public float heartRateGain = 0.1f;
-    public float heartRateLoss = 0.1f;
+    public int damageAmount = 20;
+    public ParticleSystem damageParticleSystem;
+
+    [HideInInspector]
+    public float rate;
+    public float rateMin = 0f;
+    public float rateMax = 1f;
+
+    public float rateGain = 0.1f;
+    public float rateLoss = 0.1f;
 
     public float sizeMin = 1f;
     public float sizeMax = 4f;
 
-    public float heartMovementSpeed = 1f;
+    public float movementSpeed = 1f;
+
+    public Color colour;
 
     public Wave[] waves;
-	
-	new private Rigidbody2D rigidbody;
+    public float waveSpeed;
+
+    new private Rigidbody2D rigidbody;
     
     void Start()
     {
-        heartRate = (heartRateMax - heartRateMin) / 2;
+        SetHealth(healthMax);
+        rate = (rateMax - rateMin) / 2;
         rigidbody = GetComponent <Rigidbody2D>();
     }
 
 	void Update()
     {
-        heartRate = Mathf.Clamp(heartRate - (heartRateLoss * Time.deltaTime), heartRateMin, heartRateMax);
-        if ((player == 1 && Input.GetButtonDown("Jump") || player == 2 && Input.GetButtonDown("Jump-2")))
+        if ((player == 0 && Input.GetButtonDown("Jump") || player == 1 && Input.GetButtonDown("Jump-2")))
         {
-            heartRate += heartRateGain;
+            rate = Mathf.Clamp(rate + (rateGain), rateMin, rateMax);
+        }
+        else
+        {
+            rate = Mathf.Clamp(rate - (rateLoss * Time.deltaTime), rateMin, rateMax);
         }
 
-        float t = (heartRate - heartRateMin) / heartRateMax;
+
+        float hr = (rate - rateMin) / rateMax;
         foreach (Wave wave in waves)
         {
-            wave.targetScale = t;
+            wave.targetSpeed = hr * waveSpeed;
         }
-        transform.localScale = new Vector3(sizeMin, sizeMin) + new Vector3(sizeMax - sizeMin, sizeMax - sizeMin) * t;
+        transform.localScale = new Vector3(sizeMin, sizeMin) + new Vector3(sizeMax - sizeMin, sizeMax - sizeMin) * hr;
+
+        ParticleSystem.MainModule main = damageParticleSystem.main;
+        main.startSize = 1f / 100f * transform.lossyScale.magnitude;
 
         Move();
 	}
 
 	void Move()
     {
-        float y = (player == 1) ? Input.GetAxis("Vertical") : (player == 2) ? Input.GetAxis("Vertical-2") : 0f;
-		Vector2 movement = new Vector2(0, y);
-		rigidbody.MovePosition(rigidbody.position + movement * heartMovementSpeed * Time.deltaTime);
+        float x = (player == 0) ? Input.GetAxis("Horizontal") : Input.GetAxis("Horizontal-2");
+        float y = (player == 0) ? Input.GetAxis("Vertical") :  Input.GetAxis("Vertical-2");
+		Vector3 movement = new Vector3(x, y);
+        rigidbody.velocity = movement * movementSpeed; 
 	}
 
 	void OnCollisionEnter2D(Collision2D collision)
     {
 		if (collision.gameObject.tag == "Waves")
         {
-            GameManager.instance.GameOver(this);
-            gameObject.SetActive(false);
+            SetHealth(Mathf.Clamp(health - damageAmount, healthMin, healthMax));
+
+            damageParticleSystem.Play();
+
+            if (health <= healthMin || health > healthMax)
+            {
+                GameManager.instance.GameOver(this);
+            }
         }
+        //bounce
 	}
+
+    void SetHealth(int health)
+    {
+        this.health = health;
+        float h = (float)(health - healthMin) / healthMax;
+
+        Color colour = this.colour;
+        colour.r *= h;
+        colour.g *= h;
+        colour.b *= h;
+
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.color = colour;
+
+        ParticleSystem.MainModule main = damageParticleSystem.main;
+        main.startColor = colour;
+    }
 }

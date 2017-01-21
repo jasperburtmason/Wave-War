@@ -8,7 +8,12 @@ public class GameManager : MonoBehaviour
 {
 	public static GameManager instance = null;
 
-    public string sceneName = "";
+    public Heart[] players;
+
+    public GameObject gameOverPanel;
+    public Text winnerText;
+
+    [HideInInspector]
     public bool gameOver = false;
 
 	public GameObject BorderObjet;
@@ -17,14 +22,10 @@ public class GameManager : MonoBehaviour
 	[HideInInspector]
 	public float height;
 
-    public GameObject gameOverPanel;
-    public Text winnerText;
-
 	private float leftBorder;
 	private float rightBorder;
 	private float topBorder;
 	private float bottomBorder;
-
 	private Vector3 cameraPos;
 
 	void Awake()
@@ -88,8 +89,8 @@ public class GameManager : MonoBehaviour
     {
         gameOver = true;
         gameOverPanel.SetActive(true);
-        winnerText.text = ((instigator.player == 1) ? "Blue" : "Red") + " Player Wins";
-        winnerText.color = (instigator.player == 1) ? Color.blue : Color.red;
+        winnerText.text = ((instigator.player == 0) ? "Blue" : "Red") + " Player Wins";
+        winnerText.color = (instigator.player == 0) ? Color.blue : Color.red;
 
         Heart[] hearts = FindObjectsOfType<Heart>();
         foreach (Heart heart in hearts)

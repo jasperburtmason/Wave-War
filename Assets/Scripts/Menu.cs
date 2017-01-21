@@ -5,11 +5,17 @@ using UnityEngine.SceneManagement;
 
 public class Menu : MonoBehaviour
 {
-    public string sceneName;
+    public string playSceneName;
+    public string backSceneName;
 
     public void Play()
     {
-        SceneManager.LoadSceneAsync(sceneName);
+        SceneManager.LoadSceneAsync(playSceneName);
+    }
+
+    public void Back()
+    {
+        SceneManager.LoadSceneAsync(backSceneName);
     }
 
     public void Quit()
