@@ -33,6 +33,9 @@ public class Heart : MonoBehaviour
     public Wave[] waves;
     public float waveSpeed;
 
+	[HideInInspector]
+	public bool poweredUp=false;
+
     new private Rigidbody2D rigidbody;
     
     void Start()
@@ -81,13 +84,13 @@ public class Heart : MonoBehaviour
 
 	void OnCollisionEnter2D(Collision2D collision)
     {
-		if (collision.gameObject.tag == "Waves")
+		if (collision.gameObject.tag == "Waves" && !poweredUp)
         {
             health = Mathf.Clamp(health - damageAmount, healthMin, healthMax);
             float h = (float)(health - healthMin) / healthMax;
 
             ParticleSystem.MainModule main = damageParticleSystem.main;
-            main.startColor = Color.Lerp(colour * new Color(h, h, h), tint, tint.a); 
+            main.startColor = colour * new Color(h, h, h);  
             damageParticleSystem.Play();
 
             if (health <= healthMin || health > healthMax)

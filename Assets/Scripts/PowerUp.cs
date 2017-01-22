@@ -10,11 +10,18 @@ public class PowerUp : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        Heart heart = collider.GetComponent<Heart>();
-        if (!active && heart)
+        if(collider.tag == "Kill Box")
         {
-            StartCoroutine(Activate(heart));
+            Destroy(gameObject);
         }
+        else
+        {
+            Heart heart = collider.GetComponent<Heart>();
+            if (!active && heart)
+            {
+                StartCoroutine(Activate(heart));
+            }
+        }  
     }
 
     public virtual IEnumerator Activate(Heart heart)

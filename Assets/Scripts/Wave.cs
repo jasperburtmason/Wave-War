@@ -13,7 +13,7 @@ public class Wave : MonoBehaviour
     public float targetSpeed = 1f;
     public float speedSmoothness = 1f;
 
-    public int pointCount = 64;
+    public int segments = 64;
 
     private float speed;
     private float time;
@@ -29,10 +29,9 @@ public class Wave : MonoBehaviour
         speed = Mathf.Lerp(speed, targetSpeed, Time.deltaTime * speedSmoothness);
 
         LineRenderer lineRenderer = GetComponent<LineRenderer>();
-        EdgeCollider2D edgeCollider = GetComponent<EdgeCollider2D>();
-        lineRenderer.numPositions = pointCount;
+        lineRenderer.numPositions = segments;
 
-        Vector2[] points = new Vector2[pointCount];
+        Vector2[] points = new Vector2[segments];
         for(int p = 0; p < points.Length; p++)
         {
             float x = (float)p / (points.Length - 1);
@@ -53,14 +52,36 @@ public class Wave : MonoBehaviour
             }
             y *= amplitude * speed; 
 
-            Vector3 point = new Vector2(x - 0.5f, y);
+            Vector2 point = new Vector2(x - 0.5f, y);
             points[p] = point;
             lineRenderer.SetPosition(p, point);      
         }
 
-        time += Time.deltaTime * speed;
+        /*
+        Vector2[] vertices = new Vector2[segments * 2];
+        for(int p = 0; p < points.Length - 1; p++)
+        {
+            Vector2 center = points[p];
+            Vector2 normal = Quaternion.Euler(0f, 0f, -90f) * (points[p + 1] - center).normalized;
+            vertices[p * 2] = center + normal * 1;
+            vertices[p * 2 + 1] = center - normal * 1;
+        }
 
+
+        PolygonCollider2D polygonCollider = GetComponent<PolygonCollider2D>();
+        polygonCollider.points = vertices;
+        */
+        EdgeCollider2D edgeCollider = GetComponent<EdgeCollider2D>();
         edgeCollider.points = points;
+        /*
+        EdgeCollider2D[] edgeColliders = GetComponents<EdgeCollider2D>();
+        edgeColliders[0].offset = new Vector2(0, lineRenderer.widthMultiplier / 2 / transform.localScale.y);
+        edgeColliders[0].points = points;
+        edgeColliders[1].offset = new Vector2(0, -lineRenderer.widthMultiplier / 2 / transform.localScale.y);
+        edgeColliders[1].points = points;
+        */
+
+        time += Time.deltaTime * speed;
     }
 
     void OnAudioFilterRead(float[] data, int channels)
