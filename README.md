@@ -1,3 +1,3 @@
-# Wave-War
+# Heart-Attack
 
-A simple game to fight with waves.
+A local co-op versus game where you control the beat of your heart to send waves to your enemy.
