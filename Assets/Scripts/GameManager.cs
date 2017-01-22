@@ -96,6 +96,7 @@ public class GameManager : MonoBehaviour
         foreach (Heart heart in hearts)
         {
             heart.enabled = false;
+            Destroy(heart.GetComponent<Rigidbody2D>());
         }
 
         Wave[] waves = FindObjectsOfType<Wave>();

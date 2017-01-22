@@ -28,6 +28,7 @@ public class Heart : MonoBehaviour
     public float movementSpeed = 1f;
 
     public Color colour;
+    public Color tint;
 
     public Wave[] waves;
     public float waveSpeed;
@@ -36,7 +37,7 @@ public class Heart : MonoBehaviour
     
     void Start()
     {
-        SetHealth(healthMax);
+        health = healthMax;
         rate = (rateMax - rateMin) / 2;
         rigidbody = GetComponent <Rigidbody2D>();
     }
@@ -63,6 +64,10 @@ public class Heart : MonoBehaviour
         ParticleSystem.MainModule main = damageParticleSystem.main;
         main.startSize = 1f / 100f * transform.lossyScale.magnitude;
 
+        float h = (float)(health - healthMin) / healthMax;
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.color = Color.Lerp(colour * new Color(h, h, h), tint, tint.a);
+
         Move();
 	}
 
@@ -78,8 +83,11 @@ public class Heart : MonoBehaviour
     {
 		if (collision.gameObject.tag == "Waves")
         {
-            SetHealth(Mathf.Clamp(health - damageAmount, healthMin, healthMax));
+            health = Mathf.Clamp(health - damageAmount, healthMin, healthMax);
+            float h = (float)(health - healthMin) / healthMax;
 
+            ParticleSystem.MainModule main = damageParticleSystem.main;
+            main.startColor = Color.Lerp(colour * new Color(h, h, h), tint, tint.a); 
             damageParticleSystem.Play();
 
             if (health <= healthMin || health > healthMax)
@@ -87,23 +95,6 @@ public class Heart : MonoBehaviour
                 GameManager.instance.GameOver(this);
             }
         }
-        //bounce
+        //bounce?
 	}
-
-    void SetHealth(int health)
-    {
-        this.health = health;
-        float h = (float)(health - healthMin) / healthMax;
-
-        Color colour = this.colour;
-        colour.r *= h;
-        colour.g *= h;
-        colour.b *= h;
-
-        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        //spriteRenderer.color = colour;
-
-        ParticleSystem.MainModule main = damageParticleSystem.main;
-        main.startColor = colour;
-    }
 }
