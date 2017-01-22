@@ -58,9 +58,6 @@ public class GameManager : MonoBehaviour
 
 		width=rightBorder-leftBorder;
 		height=topBorder-bottomBorder;
-
-		Debug.Log (" width: " + width + '\n' + "height:" + height);
-
 	}
 
 
@@ -96,7 +93,19 @@ public class GameManager : MonoBehaviour
         foreach (Heart heart in hearts)
         {
             heart.enabled = false;
-            Destroy(heart.GetComponent<Rigidbody2D>());
+           
+        }
+
+        Rigidbody2D[] rigidbodies = FindObjectsOfType<Rigidbody2D>();
+        foreach(Rigidbody2D rigidbody in rigidbodies)
+        {
+            Destroy(rigidbody);
+        }
+
+        ParticleSystem[] particleSystems = FindObjectsOfType<ParticleSystem>();
+        foreach (ParticleSystem particleSystem in particleSystems)
+        {
+            particleSystem.Pause();
         }
 
         Wave[] waves = FindObjectsOfType<Wave>();

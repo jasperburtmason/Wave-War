@@ -47,7 +47,7 @@ public class Heart : MonoBehaviour
 
 	void Update()
     {
-        if ((player == 0 && Input.GetButtonDown("Jump") || player == 1 && Input.GetButtonDown("Jump-2")))
+        if ((player == 1 && Input.GetButtonDown("Jump") || player == 0 && Input.GetButtonDown("Jump-2")))
         {
             rate = Mathf.Clamp(rate + (rateGain), rateMin, rateMax);
         }
@@ -76,8 +76,8 @@ public class Heart : MonoBehaviour
 
 	void Move()
     {
-        float x = (player == 0) ? Input.GetAxis("Horizontal") : Input.GetAxis("Horizontal-2");
-        float y = (player == 0) ? Input.GetAxis("Vertical") :  Input.GetAxis("Vertical-2");
+        float x = (player == 1) ? Input.GetAxis("Horizontal") : Input.GetAxis("Horizontal-2");
+        float y = (player == 1) ? Input.GetAxis("Vertical") :  Input.GetAxis("Vertical-2");
 		Vector3 movement = new Vector3(x, y);
         rigidbody.velocity = movement * movementSpeed; 
 	}
