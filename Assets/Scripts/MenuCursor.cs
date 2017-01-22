@@ -5,13 +5,26 @@ using UnityEngine.EventSystems;
 
 public class MenuCursor : MonoBehaviour
 {
-	void Update ()
+    private GameObject lastSelectedGameObject;
+
+    void Awake()
     {
-        if (EventSystem.current.currentSelectedGameObject)
+        lastSelectedGameObject = EventSystem.current.firstSelectedGameObject;
+    }
+
+	void Update()
+    {
+        GameObject currentSelectedGameObject = EventSystem.current.currentSelectedGameObject;
+        if (currentSelectedGameObject && currentSelectedGameObject != lastSelectedGameObject)
         {
             Vector3 position = transform.position;
-            position.y = EventSystem.current.currentSelectedGameObject.transform.position.y;
+            position.y = currentSelectedGameObject.transform.position.y;
             transform.position = position;
+
+            AudioSource audioSource = GetComponent<AudioSource>();
+            audioSource.Play();
         }
-	}
+        lastSelectedGameObject = currentSelectedGameObject;
+
+    }
 }

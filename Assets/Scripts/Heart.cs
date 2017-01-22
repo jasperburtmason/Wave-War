@@ -101,7 +101,7 @@ public class Heart : MonoBehaviour
         colour.b *= h;
 
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        spriteRenderer.color = colour;
+        //spriteRenderer.color = colour;
 
         ParticleSystem.MainModule main = damageParticleSystem.main;
         main.startColor = colour;
