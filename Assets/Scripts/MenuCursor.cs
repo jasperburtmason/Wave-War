@@ -7,7 +7,7 @@ public class MenuCursor : MonoBehaviour
 {
     private GameObject lastSelectedGameObject;
 
-    void Awake()
+    void Start()
     {
         lastSelectedGameObject = EventSystem.current.firstSelectedGameObject;
     }
